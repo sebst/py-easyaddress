@@ -13,17 +13,35 @@ class Response():
     headers : dict
 
 
-def post(url, headers, auth, data) -> Response:
+def default_parse(status, data, headers):
+    data = json.loads(data)
+    return data, headers
+
+
+def post(url, headers, auth, data, parse=default_parse) -> Response:
     encoded_data = json.dumps(data)
-    # headers = urllib3.make_headers(basic_auth='abc:xyz', **headers)
-    # headers = urllib3.make_headers(**headers)
+    if auth:
+        auth = urllib3.make_headers(basic_auth=auth)
+        headers = {**headers, **auth}
     r = http.request('POST',
                      url,
                      body=encoded_data,
                      headers=headers)
-    print(r)
-    try:
-        data = json.loads(r.data)
-    except:
-        data = r.data
+    # print(r.status)
+    # print(r.data)
+    # data = json.loads(r.data)
+    data, headers = parse(r.status, r.data, r.headers)
+    return Response(r.status, data, {})
+
+
+def get(url, headers, auth, data, parse=default_parse) -> Response:
+    # encoded_data = json.dumps(data) TODO
+    if auth:
+        auth = urllib3.make_headers(basic_auth=auth)
+        headers = {**headers, **auth}
+    r = http.request('GET',
+                     url,
+                    #  body=encoded_data,
+                     headers=headers)
+    data, headers = parse(r.status, r.data, r.headers)
     return Response(r.status, data, {})

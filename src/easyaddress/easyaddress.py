@@ -1,19 +1,18 @@
 import os
 from dataclasses import asdict
-from .config import _API_KEY, _API_SECRET, _API_HOST, _SDK_API_KEY_VAR, _SDK_API_SECRET_VAR, _API_ENDPOINTS, _USER_AGENT, _API_JSON_TYPE
+from .config import _API_KEY, _API_SECRET, _API_HOST, _SDK_API_KEY_VAR, _SDK_API_SECRET_VAR, _API_ENDPOINTS, _USER_AGENT, _API_JSON_TYPE, _API_ENVIRONMENT
 from .http import post
 from .data.email import ValidatableEmail
 from .data.address import ValidatableAddress
 from .data.email_result import ValidatedEmail
 
 
-class API:
-    """
-    """
+class BaseAPI:
     def __init__(self,
                  api_key=None,
                  api_secret=None,
-                 api_host=None):
+                 api_host=None,
+                 environment=None):
         """
         """
         if api_key is None:
@@ -22,16 +21,22 @@ class API:
             api_secret = _API_SECRET()
         if api_host is None:
             api_host = _API_HOST()
+        if environment is None:
+            environment = _API_ENVIRONMENT()
         self.api_key = api_key
         self.api_secret = api_secret
         self.api_host = api_host
+        self.environment = environment
         # if any(c is None for c in [self.api_key, self.api_secret, self.api_host]):
             # raise RuntimeError("easyaddress.io API not set up properly. Please provide KEY and SECRET.")
 
     def _build_url(self, endpoint_name):
         """
         """
-        return _API_ENDPOINTS[endpoint_name]%(self.api_host)
+        try: # TODO
+            return _API_ENDPOINTS[endpoint_name]%(self.api_host)
+        except:
+            return _API_ENDPOINTS[endpoint_name]%(self.api_host, self.environment)
 
     def _build_headers(self):
         """
@@ -45,7 +50,13 @@ class API:
     def _build_auth(self):
         """
         """
-        return f"{self.api_key}:{self.api_secret}"
+        if self.api_key is not None and self.api_secret is not None:
+            return f"{self.api_key}:{self.api_secret}"
+
+
+class API(BaseAPI):
+    """
+    """
 
     def validate_email(self,
                        email,
