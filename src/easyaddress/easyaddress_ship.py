@@ -53,7 +53,7 @@ class API(BaseAPI):
     def get_parcel_label_pdf_bytes(self, parcel_order):
         print("get_parcel_label_pdf_bytes", parcel_order)
         # return
-        response = get(url := self._build_url('parcel_order.label')
+        response = get(self._build_url('parcel_order.label')
                             .replace('{parcel_id}', parcel_order.parcel) # TODO: .id
                             .replace('{parcel_order_id}', parcel_order.id),
                        headers=self._build_headers(),
@@ -64,7 +64,6 @@ class API(BaseAPI):
         print(response.status_code, response.data[:100])
         print()
         print()
-        print(url)
 
     def cancel_parcel_order(self, parcel_order):
         pass
