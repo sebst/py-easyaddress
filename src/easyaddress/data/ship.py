@@ -57,6 +57,7 @@ class CarrierProduct:
 class ParcelOrder:
     parcel : Parcel
     carrier_product : CarrierProduct
+    expected_shipment_date : str # TODO: DateTime
 
     id : Optional[str] = field(default=None, init=True)
 
