@@ -14,6 +14,7 @@ class API(BaseAPI):
                         auth=self._build_auth(),
                         data=asdict(parcel))
         if response.status_code != 201:
+            print(response)
             raise RuntimeError("Error.")
         # return response.data # TODO
         data = response.data
@@ -41,12 +42,15 @@ class API(BaseAPI):
         response = post(self._build_url('parcel.order').replace('{parcel_id}', parcel.id),
                         headers=self._build_headers(),
                         auth=self._build_auth(),
-                        data={'carrier_product': carrier_product})
+                        data={'carrier_product': carrier_product, 'expected_shipment_date':"2021-05-19"})
         print(response.status_code, response.data)
         print("Parcel", response.data["parcel"])
         print("CarrierProduct", response.data["carrier_product"])
         print("Id", response.data["id"])
-        parcel_order = ParcelOrder(parcel=response.data["parcel"], carrier_product=response.data["carrier_product"], id=response.data["id"]) # TODO!
+        parcel_order = ParcelOrder(parcel=response.data["parcel"],
+                                   carrier_product=response.data["carrier_product"],
+                                   id=response.data["id"], # TODO
+                                   expected_shipment_date="2021-05-19") # TODO!
         return parcel_order
         print(response)
 
@@ -60,10 +64,11 @@ class API(BaseAPI):
                        auth=self._build_auth(),
                        data=None,
                        parse=lambda x,y,z:(y,None))
-        print("URL"*88, url)
+        # print("URL"*88, url)
         print(response.status_code, response.data[:100])
         print()
         print()
+        return response.data
 
     def cancel_parcel_order(self, parcel_order):
         pass
