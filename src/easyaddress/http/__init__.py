@@ -14,6 +14,7 @@ class Response():
 
 
 def default_parse(status, data, headers):
+    print(data)
     data = json.loads(data)
     return data, headers
 
