@@ -86,7 +86,9 @@ class API(BaseAPI):
                         headers=self._build_headers(),
                         auth=self._build_auth(),
                         data=asdict(address))
-        print(response)
+        # print(response)
+        # TODO: `return ValidatedAddress(**response.data)`
+        return response
 
     def validate(self, validation_object, *args, **kwargs):
         """
